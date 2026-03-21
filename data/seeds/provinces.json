@@ -1,0 +1,7 @@
+[
+  {"id": "dak_lak",  "name": "Đắk Lắk",  "lat": 12.6667, "lon": 108.0500, "weather_q": "Buon Ma Thuot,VN"},
+  {"id": "lam_dong", "name": "Lâm Đồng", "lat": 11.9465, "lon": 108.4419, "weather_q": "Da Lat,VN"},
+  {"id": "gia_lai",  "name": "Gia Lai",  "lat": 13.9833, "lon": 108.0000, "weather_q": "Pleiku,VN"},
+  {"id": "kon_tum",  "name": "Kon Tum",  "lat": 14.3500, "lon": 107.9833, "weather_q": "Kon Tum,VN"},
+  {"id": "dak_nong", "name": "Đắk Nông", "lat": 12.0046, "lon": 107.6903, "weather_q": "Gia Nghia,VN"}
+]
