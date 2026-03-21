@@ -1,0 +1,16 @@
+{
+  "robusta": {
+    "pruning":    [1, 2],
+    "fertilize1": [3, 4],
+    "bloom":      [3, 4, 5],
+    "fertilize2": [6, 7],
+    "harvest":    [10, 11, 12]
+  },
+  "arabica": {
+    "pruning":    [2, 3],
+    "fertilize1": [4, 5],
+    "bloom":      [4, 5, 6],
+    "fertilize2": [7, 8],
+    "harvest":    [11, 12, 1]
+  }
+}

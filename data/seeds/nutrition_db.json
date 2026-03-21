@@ -1,0 +1,5 @@
+[
+  {"stage": "sau_thu_hoach", "n_kg_ha": 80,  "p_kg_ha": 40, "k_kg_ha": 80,  "notes": "Bổ sung hữu cơ sau thu hoạch"},
+  {"stage": "ra_hoa",        "n_kg_ha": 60,  "p_kg_ha": 60, "k_kg_ha": 60,  "notes": "Tăng lân để kích thích ra hoa"},
+  {"stage": "nuoi_trai",     "n_kg_ha": 100, "p_kg_ha": 30, "k_kg_ha": 120, "notes": "Tăng kali để nuôi trái"}
+]
