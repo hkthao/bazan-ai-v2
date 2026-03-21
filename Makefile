@@ -1,6 +1,6 @@
-.PHONY: dev stop logs ingest ingest-pdf ingest-md backup \
-        test test-unit test-int coverage lint format typecheck \
-        shell-rag pull-model logs-webui list-models \
+.PHONY: dev stop logs ingest ingest-pdf ingest-md backup 
+        test test-unit test-int coverage lint format typecheck 
+        shell-rag pull-model logs-webui list-models 
         shell-webui status
 
 COMPOSE=docker compose -f infra/docker-compose.yml

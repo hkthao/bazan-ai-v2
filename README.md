@@ -51,18 +51,6 @@ Project bao gồm các service chính:
 - `ollama`: Chạy LLM (Local).
 - `data-collector`: Thu thập dữ liệu giá cả thị trường.
 
-## Quick Start
-
-1. Sao chép file cấu hình:
-   ```bash
-   cp .env.example .env
-   ```
-2. Chạy ứng dụng bằng Docker Compose:
-   ```bash
-   make dev
-   ```
-3. Truy cập Web UI tại `http://localhost:3000`.
-
 ## Services
 
 | Service | Port | Description |
