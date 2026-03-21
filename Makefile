@@ -1,16 +1,25 @@
-.PHONY: dev stop logs ingest ingest-pdf ingest-md backup \
-        test test-unit test-int coverage lint format typecheck \
-        shell-rag pull-model
+.PHONY: dev stop logs ingest ingest-pdf ingest-md backup 
+        test test-unit test-int coverage lint format typecheck 
+        shell-rag pull-model logs-webui list-models 
+        shell-webui status
+
+COMPOSE=docker compose -f infra/docker-compose.yml
 
 # Docker
 dev:
-	docker compose -f infra/docker-compose.yml up -d
+	$(COMPOSE) up -d
 
 stop:
-	docker compose -f infra/docker-compose.yml down
+	$(COMPOSE) down
 
 logs:
-	docker compose -f infra/docker-compose.yml logs -f
+	$(COMPOSE) logs -f
+
+logs-webui:
+	$(COMPOSE) logs -f open-webui
+
+status:
+	$(COMPOSE) ps
 
 # Data
 ingest:
@@ -50,7 +59,13 @@ typecheck:
 
 # Utils
 shell-rag:
-	docker compose -f infra/docker-compose.yml exec rag-api bash
+	$(COMPOSE) exec rag-api bash
+
+shell-webui:
+	$(COMPOSE) exec open-webui bash
 
 pull-model:
-	docker compose -f infra/docker-compose.yml exec ollama ollama pull llama3.2
+	ollama pull $(OLLAMA_MODEL)
+
+list-models:
+	ollama list

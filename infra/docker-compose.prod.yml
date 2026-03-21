@@ -1,0 +1,18 @@
+services:
+  ollama:
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  open-webui:
+    restart: always
+    environment:
+      - ENABLE_SIGNUP=false
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

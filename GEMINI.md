@@ -36,26 +36,32 @@ bazan-ai/
 ├── services/
 │   ├── rag-api/                  # FastAPI — search + ingest tài liệu
 │   │   ├── app/
-│   │   │   ├── main.py
 │   │   │   ├── config.py         # pydantic-settings, đọc từ .env
+│   │   │   ├── main.py
+│   │   │   ├── __pycache__/...
 │   │   │   ├── api/
+│   │   │   │   ├── deps.py
+│   │   │   │   ├── __pycache__/...
 │   │   │   │   └── routes/
-│   │   │   │       ├── search.py   # POST /search
-│   │   │   │       ├── ingest.py   # POST /ingest
-│   │   │   │       └── health.py   # GET /health
+│   │   │   │       ├── health.py
+│   │   │   │       ├── ingest.py
+│   │   │   │       ├── search.py
+│   │   │   │       └── __pycache__/...
 │   │   │   ├── core/
-│   │   │   │   ├── embedder.py     # BAAI/bge-m3 wrapper
-│   │   │   │   ├── retriever.py    # Qdrant client + search logic
-│   │   │   │   ├── chunker.py      # Text splitting strategies
-│   │   │   │   └── reranker.py     # Cross-encoder reranking (tùy chọn)
+│   │   │   │   ├── chunker.py
+│   │   │   │   ├── embedder.py
+│   │   │   │   ├── retriever.py
+│   │   │   │   └── __pycache__/...
 │   │   │   ├── ingest/
 │   │   │   │   ├── base_loader.py
-│   │   │   │   ├── pdf_loader.py   # pdfplumber + surya-ocr fallback
-│   │   │   │   ├── md_loader.py    # split theo headers H1-H3
-│   │   │   │   └── pipeline.py     # load → chunk → embed → upsert Qdrant
+│   │   │   │   ├── md_loader.py
+│   │   │   │   ├── pdf_loader.py
+│   │   │   │   ├── pipeline.py
+│   │   │   │   └── __pycache__/...
 │   │   │   └── models/
+│   │   │       ├── document.py
 │   │   │       ├── schemas.py
-│   │   │       └── document.py
+│   │   │       └── __pycache__/...
 │   │   ├── tests/
 │   │   ├── Dockerfile
 │   │   ├── pyproject.toml
@@ -65,10 +71,10 @@ bazan-ai/
 │   │   ├── pipelines/
 │   │   │   └── bazan_rag_pipeline.py
 │   │   ├── tools/
-│   │   │   ├── weather_tool.py       # OpenWeatherMap — tỉnh Tây Nguyên
-│   │   │   ├── price_tool.py         # Giá cà phê nhân xô
-│   │   │   ├── farming_plan_tool.py  # Tạo kế hoạch trồng trọt
-│   │   │   └── soil_tool.py          # Tra cứu đất đai, dinh dưỡng
+│   │   │   ├── farming_plan_tool.py
+│   │   │   ├── price_tool.py
+│   │   │   ├── soil_tool.py
+│   │   │   └── weather_tool.py
 │   │   ├── Dockerfile
 │   │   ├── requirements.txt
 │   │   └── .env.example
@@ -86,19 +92,18 @@ bazan-ai/
 │   ├── processed/
 │   │   └── chunks/               # JSON chunks (backup/debug)
 │   └── seeds/
-│       ├── provinces.json        # Tỉnh Tây Nguyên + tọa độ
-│       ├── soil_types.json       # Phân loại đất (đất đỏ bazan, v.v.)
-│       ├── crop_calendar.json    # Lịch trồng, thu hoạch theo tháng
-│       └── nutrition_db.json     # Nhu cầu dinh dưỡng từng giai đoạn
+│       ├── crop_calendar.json
+│       ├── nutrition_db.json
+│       ├── provinces.json
+│       └── soil_types.json
 │
 ├── infra/
 │   ├── docker-compose.yml
 │   ├── docker-compose.prod.yml
 │   ├── nginx/nginx.conf
 │   └── scripts/
-│       ├── ingest_all.sh         # Index toàn bộ data/raw/
 │       ├── backup_db.sh
-│       └── setup_dev.sh
+│       └── ingest_all.sh
 │
 ├── tests/
 │   ├── unit/
@@ -108,9 +113,9 @@ bazan-ai/
 │
 ├── docs/
 │   ├── architecture.md
+│   ├── deployment.md
 │   ├── rag-pipeline.md
-│   ├── tools.md
-│   └── deployment.md
+│   └── tools.md
 │
 ├── GEMINI.md
 ├── README.md
@@ -177,7 +182,7 @@ make test-int      # pytest tests/integration/
 make coverage      # pytest --cov
 
 make lint          # ruff check .
-make format        # ruff format .
+make format          # ruff format .
 make typecheck     # mypy services/
 
 make shell-rag     # docker exec -it rag-api bash
@@ -188,7 +193,17 @@ make pull-model    # docker exec ollama ollama pull llama3.2
 
 ## GitHub Issue Workflow
 
-Khi được yêu cầu **"thực hiện issue #X"**, thực hiện tuần tự các bước sau — không bỏ qua bước nào.
+**QUY TẮC BẮT BUỘC:** Trước khi thực hiện bất kỳ task nào (ngay cả khi chưa có issue sẵn), bạn PHẢI tự log một GitHub Issue để mô tả công việc, sau đó mới tiến hành các bước tiếp theo.
+
+Khi được yêu cầu **"thực hiện issue #X"** (hoặc một task chưa có issue), thực hiện tuần tự các bước sau — không bỏ qua bước nào.
+
+### Bước 0 — Log Issue (nếu chưa có)
+
+Nếu task chưa có Issue ID:
+```bash
+gh issue create --title "<type>(<scope>): <mô tả ngắn>" --body "<mô tả chi tiết và acceptance criteria>"
+```
+Ghi lại số Issue vừa tạo để sử dụng cho các bước sau.
 
 ### Bước 1 — Đọc và phân tích issue
 
@@ -343,8 +358,8 @@ git diff main..HEAD
 ```bash
 git push origin <branch-name>
 
-gh pr create \
-  --title "<type>(<scope>): <mô tả ngắn>" \
+gh pr create 
+  --title "<type>(<scope>): <mô tả ngắn>" 
   --body "$(cat <<'EOF'
 ## Summary
 
@@ -366,7 +381,7 @@ gh pr create \
 
 Closes #<issue-number>
 EOF
-)" \
+)" 
   --base main
 ```
 
@@ -401,16 +416,16 @@ gh issue view <number>
 
 ---
 
-## Xử lý từng loại task
+<h2>Xử lý từng loại task</h2>
 
-### Feature mới
+<h3>Feature mới</h3>
 
 1. Thiết kế interface trước (function signatures, API endpoint, Pydantic schema) — commit riêng nếu lớn
 2. Viết test trước nếu logic phức tạp (TDD nhẹ)
 3. Implement từng phần nhỏ, commit sau mỗi phần hoạt động
 4. Integration test cuối cùng
 
-### Bug fix
+<h3>Bug fix</h3>
 
 1. Reproduce bug — viết failing test trước (nếu có thể)
 2. Tìm root cause — không patch symptom
@@ -427,13 +442,13 @@ Fix: <cách sửa>
 Closes #<N>
 ```
 
-### Refactor
+<h3>Refactor</h3>
 
 - Không thay đổi behavior — `make test` phải pass trước và sau
 - Commit từng bước nhỏ — mỗi commit là một bước refactor an toàn
 - Không trộn refactor với feature/fix trong cùng branch
 
-### Chore / dependency update
+<h3>Chore / dependency update</h3>
 
 ```bash
 # Đọc CHANGELOG trước khi update
@@ -441,7 +456,7 @@ uv add <package>@latest
 make test
 ```
 
-### Docs
+<h3>Docs</h3>
 
 - Viết ở thì hiện tại ("Returns a list of..." không phải "Will return...")
 - Bao gồm example nếu API/function phức tạp
@@ -449,7 +464,7 @@ make test
 
 ---
 
-## Quy tắc không được vi phạm
+<h2>Quy tắc không được vi phạm</h2>
 
 | Không được | Thay bằng |
 |---|---|
@@ -464,9 +479,9 @@ make test
 
 ---
 
-## Khi gặp vấn đề
+<h2>Khi gặp vấn đề</h2>
 
-### Conflict khi merge
+<h3>Conflict khi merge</h3>
 
 ```bash
 git fetch origin main
@@ -476,7 +491,7 @@ git rebase --continue
 git push origin <branch-name> --force-with-lease
 ```
 
-### Test thất bại không liên quan đến thay đổi của mình
+<h3>Test thất bại không liên quan đến thay đổi của mình</h3>
 
 ```bash
 git stash
@@ -488,7 +503,7 @@ git stash pop
 
 Nếu test đã fail từ trước: ghi chú trong PR, tạo issue mới để track.
 
-### Qdrant không kết nối được
+<h3>Qdrant không kết nối được</h3>
 
 ```bash
 docker compose ps qdrant
@@ -497,13 +512,13 @@ curl http://localhost:6333/collections
 open http://localhost:6333/dashboard
 ```
 
-### Embedding chạy chậm / OOM
+<h3>Embedding chạy chậm / OOM</h3>
 
 - Kiểm tra `EMBEDDING_DEVICE` trong `.env` (thử `cpu` trước)
 - Giảm batch size trong `embedder.py`
 - Tăng memory limit cho container `rag-api` trong `docker-compose.yml`
 
-### Không chắc về hướng implementation
+<h3>Không chắc về hướng implementation</h3>
 
 1. Thử spike nhỏ trong branch riêng (không commit vào branch chính)
 2. Ghi chú các option đã cân nhắc vào comment của issue
@@ -511,14 +526,14 @@ open http://localhost:6333/dashboard
 
 ---
 
-## Báo cáo tiến độ
+<h2>Báo cáo tiến độ</h2>
 
 ```bash
 gh issue comment <number> --body "
 **Status update**
 
 - [x] Đọc và phân tích yêu cầu
-- [x] Tạo branch \`feat/issue-<N>-...\`
+- [x] Tạo branch `feat/issue-<N>-...`
 - [x] Implement phần X
 - [ ] Viết tests
 - [ ] Tạo PR
@@ -529,7 +544,7 @@ gh issue comment <number> --body "
 
 ---
 
-## Definition of Done
+<h2>Definition of Done</h2>
 
 - [ ] Tất cả acceptance criteria trong issue đã được đáp ứng
 - [ ] Code đã được self-review
@@ -543,7 +558,7 @@ gh issue comment <number> --body "
 
 ---
 
-## Lệnh tham khảo nhanh
+<h2>Lệnh tham khảo nhanh</h2>
 
 ```bash
 # Issues
