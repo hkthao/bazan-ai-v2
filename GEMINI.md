@@ -188,7 +188,17 @@ make pull-model    # docker exec ollama ollama pull llama3.2
 
 ## GitHub Issue Workflow
 
-Khi được yêu cầu **"thực hiện issue #X"**, thực hiện tuần tự các bước sau — không bỏ qua bước nào.
+**QUY TẮC BẮT BUỘC:** Trước khi thực hiện bất kỳ task nào (ngay cả khi chưa có issue sẵn), bạn PHẢI tự log một GitHub Issue để mô tả công việc, sau đó mới tiến hành các bước tiếp theo.
+
+Khi được yêu cầu **"thực hiện issue #X"** (hoặc một task chưa có issue), thực hiện tuần tự các bước sau — không bỏ qua bước nào.
+
+### Bước 0 — Log Issue (nếu chưa có)
+
+Nếu task chưa có Issue ID:
+```bash
+gh issue create --title "<type>(<scope>): <mô tả ngắn>" --body "<mô tả chi tiết và acceptance criteria>"
+```
+Ghi lại số Issue vừa tạo để sử dụng cho các bước sau.
 
 ### Bước 1 — Đọc và phân tích issue
 
