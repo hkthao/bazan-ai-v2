@@ -3,7 +3,7 @@ title: Thời tiết Tây Nguyên
 author: Bazan AI
 description: Lấy thông tin thời tiết hiện tại và dự báo cho 5 tỉnh Tây Nguyên,
              kèm nhận xét về điều kiện canh tác cà phê.
-version: 1.0.0
+version: 1.0.1
 """
 
 import httpx
@@ -19,30 +19,26 @@ PROVINCES = {
     "đắk lắc": {"q": "Buon Ma Thuot,VN", "name": "Đắk Lắk"},
     "buôn ma thuột": {"q": "Buon Ma Thuot,VN", "name": "Đắk Lắk"},
     "buon ma thuot": {"q": "Buon Ma Thuot,VN", "name": "Đắk Lắk"},
-
     # Lâm Đồng
     "lâm đồng": {"q": "Da Lat,VN", "name": "Lâm Đồng"},
     "lam dong": {"q": "Da Lat,VN", "name": "Lâm Đồng"},
     "lamdong": {"q": "Da Lat,VN", "name": "Lâm Đồng"},
     "đà lạt": {"q": "Da Lat,VN", "name": "Lâm Đồng"},
     "da lat": {"q": "Da Lat,VN", "name": "Lâm Đồng"},
-
     # Gia Lai
     "gia lai": {"q": "Pleiku,VN", "name": "Gia Lai"},
     "gialai": {"q": "Pleiku,VN", "name": "Gia Lai"},
     "pleiku": {"q": "Pleiku,VN", "name": "Gia Lai"},
     "plei ku": {"q": "Pleiku,VN", "name": "Gia Lai"},
-
     # Kon Tum
     "kon tum": {"q": "Kon Tum,VN", "name": "Kon Tum"},
     "kontum": {"q": "Kon Tum,VN", "name": "Kon Tum"},
-
-    # Đắk Nông
-    "đắk nông": {"q": "Gia Nghia,VN", "name": "Đắk Nông"},
-    "dak nong": {"q": "Gia Nghia,VN", "name": "Đắk Nông"},
-    "daknong": {"q": "Gia Nghia,VN", "name": "Đắk Nông"},
-    "gia nghĩa": {"q": "Gia Nghia,VN", "name": "Đắk Nông"},
-    "gia nghia": {"q": "Gia Nghia,VN", "name": "Đắk Nông"},
+    # Đắk Nông (proxy Buon Ma Thuot as OpenWeatherMap lacks Gia Nghia data)
+    "đắk nông": {"q": "Buon Ma Thuot,VN", "name": "Đắk Nông"},
+    "dak nong": {"q": "Buon Ma Thuot,VN", "name": "Đắk Nông"},
+    "daknong": {"q": "Buon Ma Thuot,VN", "name": "Đắk Nông"},
+    "gia nghĩa": {"q": "Buon Ma Thuot,VN", "name": "Đắk Nông"},
+    "gia nghia": {"q": "Buon Ma Thuot,VN", "name": "Đắk Nông"},
 }
 
 WEATHER_VI = {
@@ -67,20 +63,13 @@ WEATHER_VI = {
 
 
 def _translate_weather(description: str) -> str:
-    desc_lower = description.lower()
-    return WEATHER_VI.get(desc_lower, description)
+    return WEATHER_VI.get(description.lower(), description)
 
 
-def _farming_advice(
-    temp: float,
-    humidity: float,
-    rain_mm: float,
-    wind_speed: float,
-    description: str,
-) -> str:
+def _farming_advice(temp, humidity, rain_mm, wind_speed, description) -> str:
     advice = []
+    desc_lower = description.lower()
 
-    # Tưới nước
     if rain_mm >= 25:
         advice.append("Không cần tưới — mưa đủ bù nhu cầu cây")
     elif rain_mm >= 10:
@@ -92,19 +81,17 @@ def _farming_advice(
     else:
         advice.append("Theo dõi độ ẩm đất để quyết định tưới")
 
-    # Phun thuốc / bón phân
     if wind_speed > 20:
         advice.append("Không nên phun thuốc hoặc bón phân lá — gió mạnh")
-    elif "rain" in description.lower() or "thunderstorm" in description.lower():
+    elif "rain" in desc_lower or "thunderstorm" in desc_lower:
         advice.append("Không nên phun thuốc hoặc bón phân lá — trời mưa")
     else:
         advice.append("Điều kiện phù hợp để phun thuốc hoặc bón phân lá")
 
-    # Cảnh báo đặc biệt
     if temp > 35:
-        advice.append("⚠ Nhiệt độ cao — cây dễ bị stress nhiệt, kiểm tra độ ẩm đất")
-    if humidity > 90 and "rain" not in description.lower():
-        advice.append("⚠ Độ ẩm cao kéo dài — nguy cơ bệnh nấm, kiểm tra lá cây")
+        advice.append("⚠ Nhiệt độ cao — cây dễ bị stress nhiệt")
+    if humidity > 90 and "rain" not in desc_lower:
+        advice.append("⚠ Độ ẩm cao — nguy cơ bệnh nấm, kiểm tra lá cây")
 
     return " | ".join(advice)
 
@@ -129,19 +116,16 @@ class Tools:
         if not self.valves.OPENWEATHER_API_KEY:
             return (
                 "Chưa cấu hình API key thời tiết. "
-                "Vào Admin Panel → Tools → weather_tool → Valves → "
+                "Vào Admin Panel → Tools → Thời tiết Tây Nguyên → Valves → "
                 "điền OPENWEATHER_API_KEY từ openweathermap.org (đăng ký miễn phí)."
             )
 
-        # Normalize tên tỉnh
         key = province.lower().strip()
         info = PROVINCES.get(key)
-
         if not info:
-            provinces_list = "Đắk Lắk, Lâm Đồng, Gia Lai, Kon Tum, Đắk Nông"
             return (
                 f"Không tìm thấy tỉnh '{province}'. "
-                f"Các tỉnh hỗ trợ: {provinces_list}."
+                "Các tỉnh hỗ trợ: Đắk Lắk, Lâm Đồng, Gia Lai, Kon Tum, Đắk Nông."
             )
 
         try:
@@ -155,12 +139,10 @@ class Tools:
                 },
                 timeout=10.0,
             )
-
             if resp.status_code == 401:
                 return "API key không hợp lệ. Kiểm tra lại OPENWEATHER_API_KEY."
             if resp.status_code == 404:
                 return f"Không tìm thấy dữ liệu thời tiết cho {info['name']}."
-
             resp.raise_for_status()
             data = resp.json()
 
@@ -168,50 +150,46 @@ class Tools:
             feels_like = data["main"]["feels_like"]
             humidity = data["main"]["humidity"]
             description = data["weather"][0]["description"]
-            wind_speed = data["wind"]["speed"] * 3.6  # m/s → km/h
+            wind_speed = data["wind"]["speed"] * 3.6
             rain_mm = data.get("rain", {}).get("1h", 0)
             clouds = data["clouds"]["all"]
 
             desc_vi = _translate_weather(description)
             advice = _farming_advice(temp, humidity, rain_mm, wind_speed, description)
-
             now = datetime.now().strftime("%H:%M %d/%m/%Y")
 
-            result = f"""🌤 Thời tiết {info['name']} — {now}
-
-Nhiệt độ: {temp:.1f}°C (cảm giác {feels_like:.1f}°C)
-Thời tiết: {desc_vi}
-Độ ẩm: {humidity}%
-Gió: {wind_speed:.0f} km/h
-Mây: {clouds}%"""
-
+            result = (
+                f"🌤 Thời tiết {info['name']} — {now}\n\n"
+                f"Nhiệt độ: {temp:.1f}°C (cảm giác {feels_like:.1f}°C)\n"
+                f"Thời tiết: {desc_vi}\n"
+                f"Độ ẩm: {humidity}%\n"
+                f"Gió: {wind_speed:.0f} km/h\n"
+                f"Mây: {clouds}%"
+            )
             if rain_mm > 0:
                 result += f"\nMưa (1h qua): {rain_mm:.1f} mm"
-
             result += f"\n\n📋 Nhận xét canh tác:\n{advice}"
-
             return result
 
         except httpx.TimeoutException:
-            return f"Không thể lấy thời tiết {info['name']} — kết nối timeout. Thử lại sau."
+            return f"Không thể lấy thời tiết {info['name']} — timeout. Thử lại sau."
         except httpx.HTTPError as e:
-            return f"Lỗi khi lấy thời tiết: {str(e)}"
+            return f"Lỗi HTTP: {str(e)}"
         except Exception as e:
-            return f"Lỗi không xác định: {str(e)}"
+            return f"Lỗi: {str(e)}"
 
     def get_forecast(self, province: str) -> str:
         """
         Lấy dự báo thời tiết 5 ngày tới cho tỉnh Tây Nguyên.
         Hỗ trợ: Đắk Lắk, Lâm Đồng, Gia Lai, Kon Tum, Đắk Nông.
         :param province: Tên tỉnh (có dấu hoặc không dấu đều được)
-        :return: Dự báo thời tiết 5 ngày và nhận xét canh tác
+        :return: Dự báo thời tiết và nhận xét canh tác
         """
         if not self.valves.OPENWEATHER_API_KEY:
             return "Chưa cấu hình OPENWEATHER_API_KEY."
 
         key = province.lower().strip()
         info = PROVINCES.get(key)
-
         if not info:
             return (
                 f"Không tìm thấy tỉnh '{province}'. "
@@ -225,7 +203,7 @@ Mây: {clouds}%"""
                     "q": info["q"],
                     "appid": self.valves.OPENWEATHER_API_KEY,
                     "units": "metric",
-                    "cnt": 5,  # 5 time slots x 3h = 15h tới
+                    "cnt": 5,
                     "lang": "vi",
                 },
                 timeout=10.0,
@@ -248,11 +226,11 @@ Mây: {clouds}%"""
                 lines.append(line)
 
             if total_rain >= 25:
-                lines.append(f"\n💧 Tổng mưa dự báo: {total_rain:.1f}mm — không cần tưới")
+                lines.append(f"\n💧 Tổng mưa: {total_rain:.1f}mm — không cần tưới")
             elif total_rain > 0:
-                lines.append(f"\n💧 Tổng mưa dự báo: {total_rain:.1f}mm — có thể lùi lịch tưới")
+                lines.append(f"\n💧 Tổng mưa: {total_rain:.1f}mm — có thể lùi lịch tưới")
             else:
-                lines.append("\n💧 Không có mưa dự báo — theo dõi độ ẩm đất")
+                lines.append("\n💧 Không có mưa — theo dõi độ ẩm đất")
 
             return "\n".join(lines)
 
