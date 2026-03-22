@@ -59,6 +59,28 @@ Project bao gồm các service chính:
 | RAG API | 8001 | FastAPI search & ingest |
 | Qdrant | 6333 | Vector DB |
 | Ollama | 11434 | LLM API |
+| Kokoro TTS | 8880 | OpenAI-compatible TTS |
+
+## Cấu hình TTS (Open WebUI)
+
+**Admin Panel → Settings → Audio:**
+
+| Field | Giá trị |
+|---|---|
+| TTS Engine | `OpenAI` |
+| API Base URL | `http://kokoro-tts:8880/v1` |
+| API Key | `not-needed` |
+| TTS Voice | `af_heart` |
+| TTS Model | `kokoro` |
+
+```bash
+make tts-voices   # xem danh sách voices
+make tts-test     # test audio
+```
+
+> **Lưu ý tiếng Việt:** Kokoro hiện hỗ trợ English, Japanese, Korean, Chinese.
+> Tiếng Việt đang trong lộ trình. Theo dõi: https://github.com/hexgrad/kokoro
+> Khi có: đổi `KOKORO_DEFAULT_VOICE` trong `.env` — không cần sửa gì khác.
 
 ## Development
 

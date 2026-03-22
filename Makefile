@@ -1,7 +1,7 @@
-.PHONY: dev stop logs ingest ingest-pdf ingest-md backup 
-        test test-unit test-int coverage lint format typecheck 
-        shell-rag pull-model logs-webui list-models 
-        shell-webui status
+.PHONY: dev stop logs ingest ingest-pdf ingest-md backup \
+        test test-unit test-int coverage lint format typecheck \
+        shell-rag pull-model logs-webui list-models \
+        shell-webui status tts-voices tts-test tts-test-vi logs-tts
 
 COMPOSE=docker compose -f infra/docker-compose.yml
 
@@ -78,3 +78,31 @@ qdrant-reset:
 	docker volume rm bazan-qdrant-data || true
 	$(COMPOSE) up -d qdrant
 	@echo "Qdrant data cleared and restarted"
+
+# TTS
+tts-voices:
+	@echo "=== Kokoro TTS voices ==="
+	curl -s http://localhost:$${KOKORO_PORT:-8880}/v1/voices \
+	  | python3 -c "import sys,json; voices=json.load(sys.stdin).get('voices',[]); [print(f'  {v[\"voice_id\"]:20} {v.get(\"name\",\"\")}') for v in voices]"
+
+tts-test:
+	@echo "=== Generating test audio ==="
+	curl -s http://localhost:$${KOKORO_PORT:-8880}/v1/audio/speech \
+	  -H "Content-Type: application/json" \
+	  -d '{"model":"kokoro","input":"Hello, this is Bazan AI coffee assistant. Vietnamese voice coming soon.","voice":"$${KOKORO_DEFAULT_VOICE:-af_heart}","response_format":"wav"}' \
+	  --output /tmp/bazan-tts-test.wav \
+	  && echo "Saved: /tmp/bazan-tts-test.wav" \
+	  && { command -v afplay && afplay /tmp/bazan-tts-test.wav; } \
+	  || { command -v aplay && aplay /tmp/bazan-tts-test.wav; } \
+	  || echo "Play manually: open /tmp/bazan-tts-test.wav"
+
+tts-test-vi:
+	@echo "=== Vietnamese text (English voice — temp) ==="
+	curl -s http://localhost:$${KOKORO_PORT:-8880}/v1/audio/speech \
+	  -H "Content-Type: application/json" \
+	  -d '{"model":"kokoro","input":"Gia ca ca phe hom nay tai Dak Lak la 65 nghin dong mot ky.","voice":"$${KOKORO_DEFAULT_VOICE:-af_heart}","response_format":"wav"}' \
+	  --output /tmp/bazan-tts-vi-test.wav \
+	  && echo "Saved: /tmp/bazan-tts-vi-test.wav"
+
+logs-tts:
+	$(COMPOSE) logs -f kokoro-tts
