@@ -1,7 +1,8 @@
 .PHONY: dev stop logs ingest ingest-pdf ingest-md backup \
         test test-unit test-int coverage lint format typecheck \
         shell-rag pull-model logs-webui list-models \
-        shell-webui status tts-voices tts-test tts-test-vi logs-tts
+        shell-webui status tts-voices tts-test tts-test-vi logs-tts \
+        pipeline pipeline-dry pipeline-force pipeline-review pipeline-setup
 
 COMPOSE=docker compose -f infra/docker-compose.yml
 
@@ -106,3 +107,21 @@ tts-test-vi:
 
 logs-tts:
 	$(COMPOSE) logs -f kokoro-tts
+
+# Document Pipeline
+pipeline:
+	cd services/doc-pipeline && uv run python pipeline.py
+
+pipeline-dry:
+	cd services/doc-pipeline && uv run python pipeline.py --dry
+
+pipeline-force:
+	cd services/doc-pipeline && uv run python pipeline.py --force
+
+pipeline-review:
+	cd services/doc-pipeline && uv run python pipeline.py --review
+
+pipeline-setup:
+	cd services/doc-pipeline && uv sync
+	@echo "Cần điền KB_DETAIL_ID và KB_SUMMARY_ID trong services/doc-pipeline/.env"
+	@echo "Lấy ID từ: Open WebUI → Workspace → Knowledge → mở KB → xem URL"
