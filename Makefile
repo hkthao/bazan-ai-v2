@@ -3,7 +3,7 @@
         shell-rag pull-model logs-webui list-models \
         shell-webui status tts-voices tts-test tts-test-vi logs-tts \
         pipeline pipeline-dry pipeline-force pipeline-review pipeline-setup \
-        weather-test
+        weather-test price-test
 
 COMPOSE=docker compose -f infra/docker-compose.yml
 
@@ -131,3 +131,8 @@ weather-test:
 	cd services/functions && \
 	  OPENWEATHER_API_KEY=$$(grep OPENWEATHER_API_KEY ../../.env | cut -d= -f2) \
 	  uv run python test_weather.py
+
+price-test:
+
+price-test:
+	cd services/functions && python3 -c "import sys; sys.path.insert(0, '.'); from price_tool import Tools; t = Tools(); print(t.get_coffee_price('tất cả'))"
