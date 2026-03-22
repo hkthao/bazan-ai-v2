@@ -58,6 +58,26 @@ services:
       retries: 5
       start_period: 15s
 
+  kokoro-tts:
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
+    container_name: bazan-kokoro-tts
+    ports:
+      - "${KOKORO_PORT:-8880}:8880"
+    volumes:
+      - kokoro_models:/app/models
+    environment:
+      # Tiếng Việt đang trong lộ trình Kokoro.
+      # Khi có: thay DEFAULT_VOICE thành voice tiếng Việt, không cần sửa gì khác.
+      # Theo dõi: https://github.com/hexgrad/kokoro
+      - DEFAULT_VOICE=${KOKORO_DEFAULT_VOICE:-af_heart}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8880/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
   # data-collector:
   #   build:
   #     context: ../services/data-collector
@@ -73,6 +93,8 @@ volumes:
     name: bazan-webui-data
   qdrant_data:
     name: bazan-qdrant-data
+  kokoro_models:
+    name: bazan-kokoro-models
 
 networks:
   default:
