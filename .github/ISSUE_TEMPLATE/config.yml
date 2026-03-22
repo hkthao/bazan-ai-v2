@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Tài liệu kỹ thuật
+    url: https://github.com/hkthao/bazan-ai-v2/tree/main/docs
+    about: Đọc docs trước khi tạo issue

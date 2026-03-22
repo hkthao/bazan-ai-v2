@@ -69,3 +69,12 @@ pull-model:
 
 list-models:
 	ollama list
+
+qdrant-ui:
+	open http://localhost:6333/dashboard || xdg-open http://localhost:6333/dashboard
+
+qdrant-reset:
+	$(COMPOSE) stop qdrant
+	docker volume rm bazan-qdrant-data || true
+	$(COMPOSE) up -d qdrant
+	@echo "Qdrant data cleared and restarted"
