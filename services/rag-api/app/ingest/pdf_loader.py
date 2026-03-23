@@ -1,7 +1,9 @@
 """PDF loader — extracts text and tables using pdfplumber, falls back to OCR."""
 
 from pathlib import Path
+
 import pdfplumber
+
 from app.ingest.base_loader import BaseLoader
 from app.models.document import Document
 
@@ -17,18 +19,32 @@ class PDFLoader(BaseLoader):
                 for table in page.extract_tables():
                     table_text = self._table_to_markdown(table)
                     if table_text.strip():
-                        docs.append(Document(
-                            content=table_text,
-                            metadata={"source": path.name, "page": i + 1, "type": "table", "doc_type": "pdf"},
-                        ))
+                        docs.append(
+                            Document(
+                                content=table_text,
+                                metadata={
+                                    "source": path.name,
+                                    "page": i + 1,
+                                    "type": "table",
+                                    "doc_type": "pdf",
+                                },
+                            )
+                        )
 
                 # Plain text
                 text = page.extract_text() or ""
                 if text.strip():
-                    docs.append(Document(
-                        content=text,
-                        metadata={"source": path.name, "page": i + 1, "type": "text", "doc_type": "pdf"},
-                    ))
+                    docs.append(
+                        Document(
+                            content=text,
+                            metadata={
+                                "source": path.name,
+                                "page": i + 1,
+                                "type": "text",
+                                "doc_type": "pdf",
+                            },
+                        )
+                    )
         return docs
 
     def _table_to_markdown(self, table: list) -> str:

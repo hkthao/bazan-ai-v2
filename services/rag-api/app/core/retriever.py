@@ -1,12 +1,16 @@
 """Qdrant vector store client — upsert and search."""
 
 import uuid
+
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
-    Distance, VectorParams, PointStruct,
-    Filter, FieldCondition, MatchValue,
+    Distance,
+    FieldCondition,
+    Filter,
+    MatchValue,
+    PointStruct,
+    VectorParams,
 )
-from app.config import settings
 
 
 class QdrantRetriever:

@@ -1,6 +1,5 @@
 """Unit tests for Markdown loader."""
 
-from pathlib import Path
 from app.ingest.md_loader import MarkdownLoader
 
 

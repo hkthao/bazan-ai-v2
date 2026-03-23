@@ -11,7 +11,7 @@ import time
 import re
 from datetime import datetime
 from html.parser import HTMLParser
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 # ── Constants & Mapping ──────────────────────────────────────────────────────
@@ -53,6 +53,7 @@ HEADERS = {
 
 
 # ── HTML Parser ───────────────────────────────────────────────────────────────
+
 
 class PriceTableParser(HTMLParser):
     """Parser để extract mapping tỉnh -> class name từ HTML."""
@@ -139,11 +140,13 @@ def _fetch_prices() -> list[dict] | None:
                 # Clean price_str: "94,000" -> 94000
                 try:
                     price_int = int(price_str.replace(",", "").replace(".", ""))
-                    results.append({
-                        "province": province,
-                        "price": price_int,
-                        "price_str": price_str + " đ/kg"
-                    })
+                    results.append(
+                        {
+                            "province": province,
+                            "price": price_int,
+                            "price_str": price_str + " đ/kg",
+                        }
+                    )
                 except ValueError:
                     continue
 
@@ -159,6 +162,7 @@ def _fetch_prices() -> list[dict] | None:
 
 
 # ── Tool class ────────────────────────────────────────────────────────────────
+
 
 class Tools:
     class Valves(BaseModel):
@@ -205,8 +209,10 @@ class Tools:
             )
 
         # Format kết quả
-        update_time = datetime.fromtimestamp(_cache["timestamp"]).strftime("%H:%M %d/%m/%Y")
-        
+        update_time = datetime.fromtimestamp(_cache["timestamp"]).strftime(
+            "%H:%M %d/%m/%Y"
+        )
+
         if filter_province:
             p = filtered[0]
             msg = (
@@ -226,13 +232,13 @@ class Tools:
                 "☕ **Bảng giá cà phê nhân xô Tây Nguyên**",
                 f"🕒 Cập nhật: {update_time}\n",
                 "| Tỉnh thành | Giá hôm nay |",
-                "| :--- | :--- |"
+                "| :--- | :--- |",
             ]
             # Sắp xếp theo giá giảm dần
             sorted_prices = sorted(filtered, key=lambda x: x["price"], reverse=True)
             for p in sorted_prices:
                 lines.append(f"| {p['province']:<10} | **{p['price_str']}** |")
-            
+
             lines.append("\n*Nguồn: giacaphe.com*")
             msg = "\n".join(lines)
 

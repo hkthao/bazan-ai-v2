@@ -15,8 +15,8 @@ class Settings(BaseSettings):
     # Open WebUI
     openwebui_url: str = "http://localhost:3000"
     openwebui_api_key: str = ""
-    kb_detail_id: str = ""      # ID của KB bazan_detail
-    kb_summary_id: str = ""     # ID của KB bazan_summary
+    kb_detail_id: str = ""  # ID của KB bazan_detail
+    kb_summary_id: str = ""  # ID của KB bazan_summary
 
     # Pipeline
     quality_threshold_upload: int = 7

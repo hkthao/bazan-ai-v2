@@ -38,10 +38,12 @@ def assess(text: str, max_retries: int = 3) -> dict:
         try:
             response = ollama.chat(
                 model=settings.assess_model,
-                messages=[{
-                    "role": "user",
-                    "content": ASSESS_PROMPT.format(text=truncated),
-                }],
+                messages=[
+                    {
+                        "role": "user",
+                        "content": ASSESS_PROMPT.format(text=truncated),
+                    }
+                ],
                 options={
                     "num_ctx": settings.assess_context,
                     "temperature": 0.1,
@@ -67,7 +69,7 @@ def assess(text: str, max_retries: int = 3) -> dict:
             return result
 
         except (json.JSONDecodeError, ValueError, KeyError) as e:
-            print(f"  WARN: assess attempt {attempt+1}/{max_retries} failed: {e}")
+            print(f"  WARN: assess attempt {attempt + 1}/{max_retries} failed: {e}")
             if attempt < max_retries - 1:
                 time.sleep(2)
 

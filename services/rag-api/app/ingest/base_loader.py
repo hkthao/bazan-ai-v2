@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from pathlib import Path
+
 from app.models.document import Document
 
 
@@ -17,5 +18,4 @@ class BaseLoader(ABC):
 
     @property
     @abstractmethod
-    def extensions(self) -> list[str]:
-        ...
+    def extensions(self) -> list[str]: ...

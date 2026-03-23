@@ -6,15 +6,16 @@ from extractor import ExtractedDoc
 
 @dataclass
 class Chunk:
-    content: str         # text đầy đủ bao gồm context prefix
+    content: str  # text đầy đủ bao gồm context prefix
     source_file: str
     section_heading: str
     page: int | None
     chunk_index: int
 
 
-def chunk_document(doc: ExtractedDoc, source_name: str,
-                   chunk_size: int = 512, overlap: int = 64) -> list[Chunk]:
+def chunk_document(
+    doc: ExtractedDoc, source_name: str, chunk_size: int = 512, overlap: int = 64
+) -> list[Chunk]:
     chunks = []
 
     for section in doc.sections:
@@ -37,13 +38,15 @@ def chunk_document(doc: ExtractedDoc, source_name: str,
             chunk_text = " ".join(words[start:end])
 
             if chunk_text.strip():
-                chunks.append(Chunk(
-                    content=prefix + chunk_text,
-                    source_file=source_name,
-                    section_heading=heading,
-                    page=page,
-                    chunk_index=idx,
-                ))
+                chunks.append(
+                    Chunk(
+                        content=prefix + chunk_text,
+                        source_file=source_name,
+                        section_heading=heading,
+                        page=page,
+                        chunk_index=idx,
+                    )
+                )
                 idx += 1
 
             start += chunk_size - overlap
@@ -51,8 +54,7 @@ def chunk_document(doc: ExtractedDoc, source_name: str,
     return chunks
 
 
-def create_summary_document(summary_text: str, source_name: str,
-                            metadata: dict) -> str:
+def create_summary_document(summary_text: str, source_name: str, metadata: dict) -> str:
     """Tạo document summary với metadata header."""
     topic = metadata.get("topic", "")
     region = metadata.get("region", "")

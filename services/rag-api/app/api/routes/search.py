@@ -1,10 +1,11 @@
 """Semantic search endpoint."""
 
 from fastapi import APIRouter, Depends
-from app.models.schemas import SearchRequest, SearchResponse
+
+from app.api.deps import get_embedder, get_retriever
 from app.core.embedder import Embedder
 from app.core.retriever import QdrantRetriever
-from app.api.deps import get_embedder, get_retriever
+from app.models.schemas import SearchRequest, SearchResponse
 
 router = APIRouter()
 

@@ -1,6 +1,6 @@
 """Soil and nutrition lookup tool for Tay Nguyen coffee farming."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class Tools:

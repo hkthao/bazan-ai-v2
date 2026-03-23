@@ -1,17 +1,18 @@
 """Ingest pipeline — orchestrates load → chunk → embed → upsert to Qdrant."""
 
-from pathlib import Path
-from fastapi import UploadFile
 import tempfile
+from pathlib import Path
 
-from app.ingest.base_loader import BaseLoader
-from app.ingest.pdf_loader import PDFLoader
-from app.ingest.md_loader import MarkdownLoader
+from fastapi import UploadFile
+
+from app.api.deps import get_embedder, get_retriever
+from app.core.chunker import chunk_text
 from app.core.embedder import Embedder
 from app.core.retriever import QdrantRetriever
-from app.core.chunker import chunk_text
+from app.ingest.base_loader import BaseLoader
+from app.ingest.md_loader import MarkdownLoader
+from app.ingest.pdf_loader import PDFLoader
 from app.models.schemas import IngestResponse
-from app.api.deps import get_embedder, get_retriever
 
 
 class IngestPipeline:
