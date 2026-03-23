@@ -1,9 +1,10 @@
 """Dependency injection for FastAPI routes."""
 
 from functools import lru_cache
+
+from app.config import settings
 from app.core.embedder import Embedder
 from app.core.retriever import QdrantRetriever
-from app.config import settings
 
 
 @lru_cache

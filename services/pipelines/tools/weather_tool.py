@@ -15,7 +15,9 @@ PROVINCES = {
 
 class Tools:
     class Valves(BaseModel):
-        OPENWEATHER_API_KEY: str = Field(default="", description="OpenWeatherMap API key")
+        OPENWEATHER_API_KEY: str = Field(
+            default="", description="OpenWeatherMap API key"
+        )
 
     def __init__(self):
         self.valves = self.Valves()
@@ -33,8 +35,13 @@ class Tools:
         try:
             resp = httpx.get(
                 "https://api.openweathermap.org/data/2.5/forecast",
-                params={"q": info["q"], "appid": self.valves.OPENWEATHER_API_KEY,
-                        "lang": "vi", "units": "metric", "cnt": 7},
+                params={
+                    "q": info["q"],
+                    "appid": self.valves.OPENWEATHER_API_KEY,
+                    "lang": "vi",
+                    "units": "metric",
+                    "cnt": 7,
+                },
                 timeout=10.0,
             )
             data = resp.json()

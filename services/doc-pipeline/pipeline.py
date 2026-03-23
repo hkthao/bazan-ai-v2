@@ -25,6 +25,7 @@ Không dùng bullet points, viết thành đoạn văn.
 
 def create_summary(text: str) -> str:
     import ollama
+
     response = ollama.chat(
         model=settings.assess_model,
         messages=[{"role": "user", "content": SUMMARY_PROMPT.format(text=text[:6000])}],
@@ -120,10 +121,10 @@ def run(dry_run: bool = False, force: bool = False):
     uploader = WebUIUploader()
     files = get_all_files()
 
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"Bazan AI Document Pipeline {'(DRY RUN)' if dry_run else ''}")
     print(f"Found {len(files)} files in raw directories")
-    print(f"{'='*50}")
+    print(f"{'=' * 50}")
 
     skipped = processed = 0
 
@@ -138,12 +139,12 @@ def run(dry_run: bool = False, force: bool = False):
             save_result(path, result)
         processed += 1
 
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"Done: {processed} processed, {skipped} skipped")
     if not dry_run:
         stats = get_stats()
         print(f"DB stats: {stats}")
-    print(f"{'='*50}\n")
+    print(f"{'=' * 50}\n")
 
 
 def show_review():
@@ -152,9 +153,9 @@ def show_review():
     if not files:
         print("Không có file nào cần review.")
         return
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"Files cần review ({len(files)}):")
-    print(f"{'='*50}")
+    print(f"{'=' * 50}")
     for f in files:
         print(f"  [{f['quality_score']}/10] {f['file_path']}")
         print(f"         Lý do: {f.get('reason', 'N/A')}")

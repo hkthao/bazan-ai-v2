@@ -2,7 +2,6 @@
 
 import time
 import httpx
-from pathlib import Path
 from config import settings
 
 

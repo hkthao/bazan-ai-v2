@@ -1,11 +1,14 @@
 """Embedding model wrapper using sentence-transformers (BAAI/bge-m3)."""
 
 from sentence_transformers import SentenceTransformer
+
 from app.config import settings
 
 
 class Embedder:
-    def __init__(self, model_name: str = settings.embedding_model, device: str = settings.embedding_device):
+    def __init__(
+        self, model_name: str = settings.embedding_model, device: str = settings.embedding_device
+    ):
         self.model = SentenceTransformer(model_name, device=device)
         self.vector_size = self.model.get_sentence_embedding_dimension()
 

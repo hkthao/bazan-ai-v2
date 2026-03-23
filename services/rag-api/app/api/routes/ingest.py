@@ -1,8 +1,9 @@
 """Document ingest endpoint."""
 
-from fastapi import APIRouter, UploadFile, File
-from app.models.schemas import IngestResponse
+from fastapi import APIRouter, File, UploadFile
+
 from app.ingest.pipeline import IngestPipeline
+from app.models.schemas import IngestResponse
 
 router = APIRouter()
 

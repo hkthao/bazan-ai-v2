@@ -228,7 +228,9 @@ class Tools:
             if total_rain >= 25:
                 lines.append(f"\n💧 Tổng mưa: {total_rain:.1f}mm — không cần tưới")
             elif total_rain > 0:
-                lines.append(f"\n💧 Tổng mưa: {total_rain:.1f}mm — có thể lùi lịch tưới")
+                lines.append(
+                    f"\n💧 Tổng mưa: {total_rain:.1f}mm — có thể lùi lịch tưới"
+                )
             else:
                 lines.append("\n💧 Không có mưa — theo dõi độ ẩm đất")
 

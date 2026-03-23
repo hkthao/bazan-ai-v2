@@ -41,32 +41,34 @@ def is_already_processed(file_path: Path) -> bool:
     current_hash = get_file_hash(file_path)
     with get_connection() as conn:
         row = conn.execute(
-            "SELECT md5_hash FROM doc_index WHERE file_path = ?",
-            (str(file_path),)
+            "SELECT md5_hash FROM doc_index WHERE file_path = ?", (str(file_path),)
         ).fetchone()
     return row is not None and row["md5_hash"] == current_hash
 
 
 def save_result(file_path: Path, result: dict) -> None:
     with get_connection() as conn:
-        conn.execute("""
+        conn.execute(
+            """
             INSERT OR REPLACE INTO doc_index
             (file_path, md5_hash, processed_at, quality_score, topic,
              region, doc_type, language, status, webui_file_id, error_message)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            str(file_path),
-            get_file_hash(file_path),
-            datetime.now().isoformat(),
-            result.get("quality_score"),
-            result.get("topic"),
-            result.get("region"),
-            result.get("doc_type"),
-            result.get("language"),
-            result.get("status"),
-            result.get("webui_file_id"),
-            result.get("error_message"),
-        ))
+        """,
+            (
+                str(file_path),
+                get_file_hash(file_path),
+                datetime.now().isoformat(),
+                result.get("quality_score"),
+                result.get("topic"),
+                result.get("region"),
+                result.get("doc_type"),
+                result.get("language"),
+                result.get("status"),
+                result.get("webui_file_id"),
+                result.get("error_message"),
+            ),
+        )
         conn.commit()
 
 

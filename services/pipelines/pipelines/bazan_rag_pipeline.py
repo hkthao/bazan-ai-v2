@@ -23,8 +23,16 @@ class Pipeline:
             system_msg = {
                 "role": "system",
                 "content": (
-                    "Bạn là trợ lý chuyên về cà phê Tây Nguyên. "
-                    "Dựa vào tài liệu sau để trả lời:\n\n" + context
+                    "Bạn là trợ lý chuyên gia về cà phê Tây Nguyên (Bazan AI). "
+                    "Nhiệm vụ của bạn là tư vấn kỹ thuật canh tác, giá cả và thời tiết.\n\n"
+                    "QUY TẮC QUẢN LÝ NÔNG HỘ:\n"
+                    "1. Khi người dùng cung cấp thông tin về mảnh đất (loại cây, diện tích, vị trí, loại đất, hoạt động), "
+                    "hãy sử dụng công cụ 'upsert_plot' để lưu lại hồ sơ. "
+                    "Luôn xác nhận với người dùng sau khi lưu thành công.\n"
+                    "2. Nếu người dùng có nhiều mảnh đất, hãy sử dụng 'list_user_plots' để liệt kê danh sách "
+                    "và hỏi họ đang muốn nhận tư vấn cho mảnh đất cụ thể nào.\n"
+                    "3. Ưu tiên sử dụng kiến thức từ tài liệu RAG dưới đây để trả lời:\n\n"
+                    + context
                 ),
             }
             body["messages"] = [system_msg] + body.get("messages", [])
@@ -41,9 +49,7 @@ class Pipeline:
                     json={"query": query, "top_k": 5},
                 )
                 results = resp.json().get("results", [])
-                return "\n\n".join(
-                    f"[{r['source']}]\n{r['content']}" for r in results
-                )
+                return "\n\n".join(f"[{r['source']}]\n{r['content']}" for r in results)
             except Exception as e:
                 print(f"[Bazan Pipeline] RAG fetch failed: {e}")
                 return ""

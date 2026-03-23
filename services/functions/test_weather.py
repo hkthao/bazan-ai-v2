@@ -21,10 +21,13 @@ def test_all_provinces():
     tool.valves.OPENWEATHER_API_KEY = api_key
 
     provinces = [
-        "đắk lắk", "Lâm Đồng", "gia lai",
-        "Kon Tum", "dak nong",
-        "buôn ma thuột",    # alias
-        "pleiku",           # alias
+        "đắk lắk",
+        "Lâm Đồng",
+        "gia lai",
+        "Kon Tum",
+        "dak nong",
+        "buôn ma thuột",  # alias
+        "pleiku",  # alias
         "tỉnh không tồn tại",  # edge case
     ]
 

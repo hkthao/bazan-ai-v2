@@ -20,13 +20,16 @@ class Tools:
         :return: Bảng giá dạng text
         """
         import httpx
+
         try:
             params = {"province": province} if province else {}
             resp = httpx.get(self.valves.PRICE_API_URL, params=params, timeout=10.0)
             data = resp.json()
             lines = ["Giá cà phê nhân xô (VNĐ/kg):"]
             for item in data.get("prices", []):
-                lines.append(f"- {item['province']}: {item['price']:,} đ/kg ({item['date']})")
+                lines.append(
+                    f"- {item['province']}: {item['price']:,} đ/kg ({item['date']})"
+                )
             return "\n".join(lines)
         except Exception as e:
             return f"Lỗi khi lấy giá cà phê: {e}"
