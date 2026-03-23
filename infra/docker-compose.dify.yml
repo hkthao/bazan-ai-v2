@@ -79,6 +79,9 @@ services:
       SERVICE_API_URL: http://localhost:7001
       APP_API_URL: http://localhost:7001
       APP_WEB_URL: http://localhost:7001
+      
+      # Migration
+      MIGRATION_ENABLED: "true"
 
       # Storage (using local for dev)
       STORAGE_TYPE: local
