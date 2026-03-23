@@ -41,6 +41,7 @@ services:
       MODE: api
       ADDR: 0.0.0.0
       PORT: 5001
+      LOG_LEVEL: ${DIFY_LOG_LEVEL:-INFO}
       DEBUG: ${DIFY_DEBUG:-false}
       FLASK_DEBUG: ${DIFY_DEBUG:-false}
       SECRET_KEY: ${DIFY_SECRET_KEY:-bazan-dify-secret-key}
@@ -97,6 +98,7 @@ services:
     restart: always
     environment:
       MODE: worker
+      LOG_LEVEL: ${DIFY_LOG_LEVEL:-INFO}
       # Same env as api
       DB_USERNAME: ${DIFY_DB_USERNAME:-postgres}
       DB_PASSWORD: ${DIFY_DB_PASSWORD:-dify123}
