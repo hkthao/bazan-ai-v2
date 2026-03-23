@@ -19,3 +19,5 @@ chromadb/
 .pytest_cache/
 htmlcov/
 .coverage
+backups/
+data/index.db
