@@ -1,0 +1,148 @@
+services:
+  dify-db:
+    image: postgres:15-alpine
+    container_name: bazan-dify-db
+    restart: always
+    environment:
+      PGUSER: ${DIFY_DB_USERNAME:-postgres}
+      POSTGRES_USER: ${DIFY_DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DIFY_DB_PASSWORD:-dify123}
+      POSTGRES_DB: ${DIFY_DB_DATABASE:-dify}
+    volumes:
+      - dify_db_data:/var/lib/postgresql/data
+    networks:
+      - bazan-network
+
+  dify-redis:
+    image: redis:6-alpine
+    container_name: bazan-dify-redis
+    restart: always
+    volumes:
+      - dify_redis_data:/data
+    networks:
+      - bazan-network
+
+  dify-sandbox:
+    image: langgenius/dify-sandbox:0.2.10
+    container_name: bazan-dify-sandbox
+    restart: always
+    environment:
+      API_KEY: ${DIFY_SANDBOX_API_KEY:-bazan-sandbox-key}
+      GIN_MODE: release
+    networks:
+      - bazan-network
+
+  dify-api:
+    image: langgenius/dify-api:0.12.1
+    container_name: bazan-dify-api
+    restart: always
+    environment:
+      # Core settings
+      MODE: api
+      ADDR: 0.0.0.0
+      PORT: 5001
+      DEBUG: ${DIFY_DEBUG:-false}
+      FLASK_DEBUG: ${DIFY_DEBUG:-false}
+      SECRET_KEY: ${DIFY_SECRET_KEY:-bazan-dify-secret-key}
+      
+      # Database settings
+      DB_USERNAME: ${DIFY_DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DIFY_DB_PASSWORD:-dify123}
+      DB_HOST: dify-db
+      DB_PORT: 5432
+      DB_DATABASE: ${DIFY_DB_DATABASE:-dify}
+      
+      # Redis settings
+      REDIS_HOST: dify-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD:
+      REDIS_DB: 0
+      
+      # CELERY settings
+      CELERY_BROKER_URL: redis://dify-redis:6379/1
+      
+      # Vector Store settings (Using existing Qdrant)
+      VECTOR_STORE: qdrant
+      QDRANT_HOST: bazan-qdrant
+      QDRANT_PORT: 6333
+      QDRANT_API_KEY:
+      
+      # Sandbox
+      SANDBOX_HOST: dify-sandbox
+      SANDBOX_PORT: 8194
+      SANDBOX_API_KEY: ${DIFY_SANDBOX_API_KEY:-bazan-sandbox-key}
+      
+      # Service exposure
+      CONSOLE_API_URL: http://localhost:7001
+      CONSOLE_WEB_URL: http://localhost:7001
+      SERVICE_API_URL: http://localhost:7001
+      APP_API_URL: http://localhost:7001
+      APP_WEB_URL: http://localhost:7001
+
+      # Storage (using local for dev)
+      STORAGE_TYPE: local
+      STORAGE_LOCAL_PATH: /app/api/storage
+    volumes:
+      - dify_api_storage:/app/api/storage
+    depends_on:
+      - dify-db
+      - dify-redis
+      - dify-sandbox
+    networks:
+      - bazan-network
+
+  dify-worker:
+    image: langgenius/dify-api:0.12.1
+    container_name: bazan-dify-worker
+    restart: always
+    environment:
+      MODE: worker
+      # Same env as api
+      DB_USERNAME: ${DIFY_DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DIFY_DB_PASSWORD:-dify123}
+      DB_HOST: dify-db
+      DB_PORT: 5432
+      DB_DATABASE: ${DIFY_DB_DATABASE:-dify}
+      REDIS_HOST: dify-redis
+      REDIS_PORT: 6379
+      CELERY_BROKER_URL: redis://dify-redis:6379/1
+      VECTOR_STORE: qdrant
+      QDRANT_HOST: bazan-qdrant
+      QDRANT_PORT: 6333
+      SANDBOX_HOST: dify-sandbox
+      SANDBOX_PORT: 8194
+      SANDBOX_API_KEY: ${DIFY_SANDBOX_API_KEY:-bazan-sandbox-key}
+      STORAGE_TYPE: local
+      STORAGE_LOCAL_PATH: /app/api/storage
+    volumes:
+      - dify_api_storage:/app/api/storage
+    depends_on:
+      - dify-api
+    networks:
+      - bazan-network
+
+  dify-web:
+    image: langgenius/dify-web:0.12.1
+    container_name: bazan-dify-web
+    restart: always
+    ports:
+      - "${DIFY_PORT:-7001}:3000"
+    environment:
+      CONSOLE_API_URL: http://localhost:7001/api
+      APP_API_URL: http://localhost:7001/api
+    depends_on:
+      - dify-api
+    networks:
+      - bazan-network
+
+volumes:
+  dify_db_data:
+    name: bazan-dify-db-data
+  dify_redis_data:
+    name: bazan-dify-redis-data
+  dify_api_storage:
+    name: bazan-dify-api-storage
+
+networks:
+  bazan-network:
+    external: true
