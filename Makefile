@@ -3,10 +3,9 @@
         shell-rag pull-model logs-webui list-models \
         shell-webui status tts-voices tts-test tts-test-vi logs-tts \
         pipeline pipeline-dry pipeline-force pipeline-review pipeline-setup \
-        weather-test price-test dify-up dify-down dify-logs
+        weather-test price-test
 
 COMPOSE=docker compose -f infra/docker-compose.yml
-COMPOSE_DIFY=docker compose -f infra/docker-compose.dify.yml
 
 # Docker
 dev:
@@ -134,17 +133,4 @@ weather-test:
 	  uv run python test_weather.py
 
 price-test:
-
-price-test:
 	cd services/functions && python3 -c "import sys; sys.path.insert(0, '.'); from price_tool import Tools; t = Tools(); print(t.get_coffee_price('tất cả'))"
-
-
-# Dify
-dify-up:
-	$(COMPOSE_DIFY) up -d
-
-dify-down:
-	$(COMPOSE_DIFY) down
-
-dify-logs:
-	$(COMPOSE_DIFY) logs -f
